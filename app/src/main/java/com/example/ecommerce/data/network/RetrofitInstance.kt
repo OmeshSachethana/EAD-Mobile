@@ -1,6 +1,6 @@
 package com.example.ecommerce.data.network
 
-import com.example.ecommerce.utils.Constants  // Import the Constants object
+//import com.example.ecommerce.utils.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
