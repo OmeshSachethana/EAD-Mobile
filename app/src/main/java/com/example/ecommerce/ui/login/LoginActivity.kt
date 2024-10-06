@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
             val password = passwordInput.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please filsadl in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

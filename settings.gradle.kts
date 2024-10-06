@@ -19,5 +19,11 @@ dependencyResolutionManagement {
     }
 }
 
+<<<<<<< HEAD
+rootProject.name = "ecommerce"
+include(":app")
+ 
+=======
 rootProject.name = "Ecommerce"
 include(":app")
+>>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
