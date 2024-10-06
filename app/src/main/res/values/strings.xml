@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Ecommerce</string>
+    <string name="username_hint">Username</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="register">Register</string>
+    <string name="register_title">Register</string>
+</resources>
