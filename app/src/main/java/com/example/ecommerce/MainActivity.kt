@@ -17,33 +17,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-<<<<<<< HEAD
 
         // Retrieve the user information passed from the LoginActivity
         val username = intent.getStringExtra(EXTRA_USERNAME) ?: "User"
         val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
         val role = intent.getStringExtra(EXTRA_ROLE) ?: "No role"
 
-=======
->>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
         setContent {
             EcommerceTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-<<<<<<< HEAD
                         name = username,
                         email = email,
                         role = role,
-=======
-                        name = "Omesh",
->>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
-<<<<<<< HEAD
 
     companion object {
         const val EXTRA_USERNAME = "EXTRA_USERNAME"
@@ -56,14 +48,6 @@ class MainActivity : ComponentActivity() {
 fun Greeting(name: String, email: String, role: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!\nEmail: $email\nRole: $role",
-=======
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
->>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
         modifier = modifier
     )
 }
@@ -72,12 +56,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     EcommerceTheme {
-<<<<<<< HEAD
         Greeting("Android", "android@example.com", "User")
     }
 }
-=======
-        Greeting("Android")
-    }
-}
->>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
