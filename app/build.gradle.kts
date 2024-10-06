@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -58,15 +59,22 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
-    // Retrofit and OkHttp from version catalog
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.material)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Retrofit and Gson Dependencies from Version Catalog
+    implementation(libs.retrofit)
+    implementation(libs.retrofitGsonConverter)
+
+    // Optional: Retrofit Logging Interceptor (for debugging network requests)
+    implementation(libs.okhttpLoggingInterceptor)
+
+    // JWT Decode Library
+    implementation(libs.jwtDecode)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
