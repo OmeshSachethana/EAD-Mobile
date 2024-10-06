@@ -19,6 +19,7 @@ import retrofit2.Response
 import com.auth0.android.jwt.JWT  // Import the JWT library
 import com.example.ecommerce.MainActivity
 import com.example.ecommerce.data.model.User
+import com.example.ecommerce.ui.registration.RegistrationActivity
 import com.example.ecommerce.utils.JwtUtils
 
 class LoginActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
         val emailInput = findViewById<EditText>(R.id.username)
         val passwordInput = findViewById<EditText>(R.id.password)
         val loginButton = findViewById<Button>(R.id.login)
+        val registerButton = findViewById<Button>(R.id.registerButton)  // Register button
 
         loginButton.setOnClickListener {
             val email = emailInput.text.toString().trim()
@@ -67,6 +69,12 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             })
+        }
+
+        // Set up the register button to navigate to the RegistrationActivity
+        registerButton.setOnClickListener {
+            val intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
         }
     }
 
