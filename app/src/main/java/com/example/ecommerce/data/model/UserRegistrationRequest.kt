@@ -1,4 +1,7 @@
 package com.example.ecommerce.data.model
 
-class UserRegistrationRequest {
-}
+data class UserRegistrationRequest(
+    val username: String,
+    val email: String,
+    val password: String
+)
