@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ecommerce.MainActivity
@@ -12,6 +13,7 @@ import com.example.ecommerce.R
 import com.example.ecommerce.data.model.User
 import com.example.ecommerce.data.model.UserRegistrationRequest
 import com.example.ecommerce.data.network.RetrofitClient
+import com.example.ecommerce.ui.login.LoginActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +31,7 @@ class RegistrationActivity : AppCompatActivity() {
         val emailInput = findViewById<EditText>(R.id.email)
         val passwordInput = findViewById<EditText>(R.id.password)
         val registerButton = findViewById<Button>(R.id.register)
+        val signInText = findViewById<TextView>(R.id.signIn)  // Sign-up text
 
         registerButton.setOnClickListener {
             val username = usernameInput.text.toString().trim()
@@ -57,6 +60,12 @@ class RegistrationActivity : AppCompatActivity() {
                     Toast.makeText(this@RegistrationActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             })
+        }
+
+        // Set up the sign-up text to navigate to the RegistrationActivity
+        signInText.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
     }
 
