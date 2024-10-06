@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Theme.Ecommerce" parent="android:Theme.Material.Light.NoActionBar" />
+<<<<<<< HEAD
 
     <style name="LoginTheme" parent="AppTheme">
         <!-- Customize your login theme here. -->
@@ -11,4 +12,6 @@
         <!-- Customize your theme here. -->
     </style>
 
+=======
+>>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
 </resources>

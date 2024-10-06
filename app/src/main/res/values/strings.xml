@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Ecommerce</string>
+<<<<<<< HEAD
     <string name="username_hint">Username</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
@@ -11,3 +12,6 @@
     <string name="action_sign_in_short">Sign In</string>
     <string name="action_sign_in">Sign In</string>
 </resources>
+=======
+</resources>
+>>>>>>> 83ff277ff6211c819d2918094b4c975640a91140
