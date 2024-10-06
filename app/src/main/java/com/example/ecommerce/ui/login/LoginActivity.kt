@@ -5,17 +5,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
-
 import com.example.ecommerce.R
 import com.example.ecommerce.data.model.LoginResponse
 import com.example.ecommerce.data.model.UserLoginRequest
 import com.example.ecommerce.data.network.RetrofitClient
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
 import com.auth0.android.jwt.JWT  // Import the JWT library
 import com.example.ecommerce.MainActivity
 import com.example.ecommerce.data.model.User
@@ -31,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         val emailInput = findViewById<EditText>(R.id.username)
         val passwordInput = findViewById<EditText>(R.id.password)
         val loginButton = findViewById<Button>(R.id.login)
-        val registerButton = findViewById<Button>(R.id.registerButton)  // Register button
+        val signUpText = findViewById<TextView>(R.id.signUp)  // Sign-up text
 
         loginButton.setOnClickListener {
             val email = emailInput.text.toString().trim()
@@ -71,8 +69,8 @@ class LoginActivity : AppCompatActivity() {
             })
         }
 
-        // Set up the register button to navigate to the RegistrationActivity
-        registerButton.setOnClickListener {
+        // Set up the sign-up text to navigate to the RegistrationActivity
+        signUpText.setOnClickListener {
             val intent = Intent(this, RegistrationActivity::class.java)
             startActivity(intent)
         }
