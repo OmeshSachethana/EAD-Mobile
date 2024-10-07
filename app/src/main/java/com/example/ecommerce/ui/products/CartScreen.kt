@@ -45,6 +45,9 @@ fun CartScreen(
     onCartItemsChanged: (List<Product>) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // State to hold the note entered by the user
+    var userNote by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -107,11 +110,23 @@ fun CartScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // TextField for user to enter a note
+            OutlinedTextField(
+                value = userNote,
+                onValueChange = { userNote = it },
+                label = { Text("Add a note to your order") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Align the button at the bottom, outside the scrollable area
             Button(
                 onClick = {
-                    // Trigger checkout
-                    performCheckout(context, email, cartItems) {
+                    // Trigger checkout with the note
+                    performCheckout(context, email, cartItems, userNote) {
                         // Clear cart items after checkout
                         onCartItemsChanged(emptyList())
                     }
@@ -119,7 +134,7 @@ fun CartScreen(
                 enabled = cartItems.isNotEmpty(), // Disable button if cart is empty
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(bottom = 16.dp) // Optional: Padding at the bottom for better spacing
+                    .padding(bottom = 16.dp)
             ) {
                 Text("Proceed to Checkout")
             }
@@ -197,6 +212,7 @@ private fun performCheckout(
     context: Context,
     email: String,
     cartItems: List<Product>,
+    userNote: String, // Add user note parameter
     onSuccess: () -> Unit
 ) {
     // Retrieve the token from SharedPreferences
@@ -213,15 +229,15 @@ private fun performCheckout(
     val products = cartItems.map { product ->
         OrderProductRequest(
             productId = product.id,
-            vendorId = product.vendorId,  // Assuming vendorId is present in the Product model
+            vendorId = product.vendorId,
             quantity = product.quantity
         )
     }
 
     val orderRequest = OrderRequest(
-        customerId = email,  // Assuming email is the customerId
+        customerId = email,
         products = products,
-        notes = "Please handle with care" // Add any additional notes as necessary
+        notes = userNote  // Add the user-provided note
     )
 
     // Get the ApiService instance using the retrieved token
