@@ -19,6 +19,7 @@ gson = "2.9.0"
 okhttp_logging_interceptor = "4.9.0"
 jwt = "2.0.0"
 glide = "4.12.0"
+materialIconsExtended = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ okhttpLoggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-int
 jwtDecode = { module = "com.auth0.android:jwtdecode", version.ref = "jwt" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

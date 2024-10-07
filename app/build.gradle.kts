@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Add the material-icons-extended dependency
-    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation(libs.androidx.material.icons.extended)
 
     // Retrofit and Gson Dependencies from Version Catalog
     implementation(libs.retrofit)
