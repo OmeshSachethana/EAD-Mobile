@@ -77,6 +77,10 @@ dependencies {
     // JWT Decode Library
     implementation(libs.jwtDecode)
 
+    // Image Loading with Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.glideCompiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,4 +1,4 @@
-package com.example.ecommerce.ui.registration
+package com.example.ecommerce.ui.register
 
 import android.content.Intent
 import android.os.Bundle
@@ -31,7 +31,7 @@ class RegistrationActivity : AppCompatActivity() {
         val emailInput = findViewById<EditText>(R.id.email)
         val passwordInput = findViewById<EditText>(R.id.password)
         val registerButton = findViewById<Button>(R.id.register)
-        val signInText = findViewById<TextView>(R.id.signIn)  // Sign-up text
+        val signInText = findViewById<TextView>(R.id.signIn)  // Sign-in text
 
         registerButton.setOnClickListener {
             val username = usernameInput.text.toString().trim()
@@ -45,7 +45,8 @@ class RegistrationActivity : AppCompatActivity() {
 
             val registrationRequest = UserRegistrationRequest(username, email, password)
 
-            RetrofitClient.instance.register(registrationRequest).enqueue(object : Callback<User> {
+            // Use RetrofitClient to perform the registration request
+            RetrofitClient.getInstance().register(registrationRequest).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful && response.body() != null) {
                         Toast.makeText(this@RegistrationActivity, "Registration Successful", Toast.LENGTH_LONG).show()
@@ -62,7 +63,7 @@ class RegistrationActivity : AppCompatActivity() {
             })
         }
 
-        // Set up the sign-up text to navigate to the RegistrationActivity
+        // Set up the sign-in text to navigate to the LoginActivity
         signInText.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -79,3 +80,4 @@ class RegistrationActivity : AppCompatActivity() {
         finish()
     }
 }
+

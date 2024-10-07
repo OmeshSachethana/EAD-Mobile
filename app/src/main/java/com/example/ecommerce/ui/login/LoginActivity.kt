@@ -14,10 +14,9 @@ import com.example.ecommerce.data.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.auth0.android.jwt.JWT  // Import the JWT library
 import com.example.ecommerce.MainActivity
 import com.example.ecommerce.data.model.User
-import com.example.ecommerce.ui.registration.RegistrationActivity
+import com.example.ecommerce.ui.register.RegistrationActivity
 import com.example.ecommerce.utils.JwtUtils
 
 class LoginActivity : AppCompatActivity() {
@@ -42,15 +41,19 @@ class LoginActivity : AppCompatActivity() {
 
             val loginRequest = UserLoginRequest(email, password)
 
-            RetrofitClient.instance.login(loginRequest).enqueue(object : Callback<LoginResponse> {
+            // Use the RetrofitClient to perform the login request
+            RetrofitClient.getInstance().login(loginRequest).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         val token = loginResponse?.token
-                        Toast.makeText(this@LoginActivity, "Login Successful. Token: $token", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_LONG).show()
 
-                        // Decode the token to extract user information
+                        // Store token in SharedPreferences
                         if (token != null) {
+                            saveAccessToken(token)  // Store the token persistently
+
+                            // Decode token and navigate to MainActivity
                             val user = JwtUtils.decodeToken(token)
                             if (user != null) {
                                 navigateToMainActivity(user)
@@ -76,15 +79,24 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Method to store the access token in SharedPreferences
+    private fun saveAccessToken(token: String) {
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("ACCESS_TOKEN", token)
+        editor.apply()
+    }
+
     private fun navigateToMainActivity(user: User) {
-        // Create an intent to navigate to MainActivity
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra(MainActivity.EXTRA_USERNAME, user.name)  // Pass the username to MainActivity
             putExtra(MainActivity.EXTRA_EMAIL, user.email)  // Pass the email to MainActivity
             putExtra(MainActivity.EXTRA_ROLE, user.role)  // Pass the role to MainActivity
         }
-
         startActivity(intent)
         finish()  // Optional: call finish() if you want to close LoginActivity
     }
 }
+
+
+
