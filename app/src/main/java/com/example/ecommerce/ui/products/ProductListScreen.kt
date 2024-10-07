@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.ecommerce.R
 import com.example.ecommerce.data.model.Product
 import com.example.ecommerce.utils.decodeBase64ToBitmap
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -119,6 +120,8 @@ fun CategoryButtons(
 
 @Composable
 fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
+    var isAddingToCart by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -160,10 +163,43 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
         Text(text = "$${product.price}")
 
         Button(
-            onClick = { onAddToCart(product) },
-            modifier = Modifier.padding(top = 8.dp)
+            onClick = {
+                isAddingToCart = true
+                onAddToCart(product)
+            },
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary, // Updated parameter name
+                contentColor = Color.White // This remains unchanged for text color
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp) // Updated to buttonElevation
         ) {
-            Text(text = "Add to Cart")
+            if (isAddingToCart) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_cart_foreground), // Replace with actual cart icon resource
+                    contentDescription = "Add to Cart",
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Add to Cart")
+            }
+        }
+
+        if (isAddingToCart) {
+            LaunchedEffect(Unit) {
+                delay(2000) // Simulate a delay for adding to cart
+                isAddingToCart = false
+                // Optionally show a Snackbar here to confirm the addition to the cart
+            }
         }
     }
 }
+
+
