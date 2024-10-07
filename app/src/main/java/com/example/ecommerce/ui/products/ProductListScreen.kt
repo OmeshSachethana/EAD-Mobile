@@ -3,10 +3,12 @@ package com.example.ecommerce.ui.products
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -56,8 +58,8 @@ fun ProductListScreen(
                 .padding(bottom = 8.dp)
         )
 
-        // Category dropdown
-        CategoryDropdownMenu(
+        // Horizontal scrollable category buttons
+        CategoryButtons(
             selectedCategory = selectedCategory,
             onCategorySelected = { selectedCategory = it },
             categories = categories
@@ -79,33 +81,28 @@ fun ProductListScreen(
 }
 
 @Composable
-fun CategoryDropdownMenu(
+fun CategoryButtons(
     selectedCategory: String,
     onCategorySelected: (String) -> Unit,
     categories: List<String>
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)) {
-        Button(onClick = { expanded = true }) {
-            Text(text = selectedCategory) // Display the currently selected category
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            categories.forEach { category ->
-                DropdownMenuItem(
-                    onClick = {
-                        onCategorySelected(category)
-                        expanded = false
-                    },
-                    text = {
-                        Text(text = category) // Correctly passing the Text composable for the 'text' parameter
-                    }
-                )
+    // Horizontal scrolling row for categories
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()) // Enable horizontal scrolling
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp) // Add spacing between buttons
+    ) {
+        categories.forEach { category ->
+            Button(
+                onClick = { onCategorySelected(category) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (category == selectedCategory) MaterialTheme.colorScheme.primary else Color.LightGray
+                ),
+                modifier = Modifier.padding(4.dp)
+            ) {
+                Text(text = category)
             }
         }
     }
