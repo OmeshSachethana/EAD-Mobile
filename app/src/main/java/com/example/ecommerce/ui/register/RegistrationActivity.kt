@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.ecommerce.MainActivity
 import com.example.ecommerce.R
 import com.example.ecommerce.data.model.User
 import com.example.ecommerce.data.model.UserRegistrationRequest
@@ -49,8 +48,8 @@ class RegistrationActivity : AppCompatActivity() {
             RetrofitClient.getInstance().register(registrationRequest).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful && response.body() != null) {
-                        Toast.makeText(this@RegistrationActivity, "Registration Successful", Toast.LENGTH_LONG).show()
-                        navigateToMainActivity(response.body()!!)
+                        Toast.makeText(this@RegistrationActivity, "Registration Successful. Please log in.", Toast.LENGTH_LONG).show()
+                        navigateToLoginActivity()
                     } else {
                         Toast.makeText(this@RegistrationActivity, "Registration Failed", Toast.LENGTH_LONG).show()
                     }
@@ -70,14 +69,11 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToMainActivity(user: User) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra(MainActivity.EXTRA_USERNAME, user.name)
-            putExtra(MainActivity.EXTRA_EMAIL, user.email)
-            putExtra(MainActivity.EXTRA_ROLE, user.role)
-        }
+    // Method to navigate to LoginActivity after successful registration
+    private fun navigateToLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
-        finish()
+        finish()  // Close RegistrationActivity
     }
 }
 

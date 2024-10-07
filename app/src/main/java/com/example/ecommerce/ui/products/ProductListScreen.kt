@@ -4,29 +4,98 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import com.example.ecommerce.utils.decodeBase64ToBitmap
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.ecommerce.R
 import com.example.ecommerce.data.model.Product
-
+import com.example.ecommerce.utils.decodeBase64ToBitmap
 
 @Composable
-fun ProductListScreen(products: List<Product>, modifier: Modifier = Modifier, onAddToCart: (Product) -> Unit) {
-    LazyColumn(modifier = modifier.padding(8.dp)) {
-        items(products) { product ->
-            ProductItem(product = product, onAddToCart = onAddToCart)
+fun ProductListScreen(
+    products: List<Product>,
+    modifier: Modifier = Modifier,
+    onAddToCart: (Product) -> Unit
+) {
+    // State variables for search and category filter
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("All") }
+
+    // List of categories (including "All" for no filtering)
+    val categories = listOf(
+        "All", "Biscuits", "Canned Foods", "Snacks", "Dairy Products",
+        "Frozen Foods", "Beverages", "Condiments", "Grains", "Fresh Produce",
+        "Bakery", "Stationery"
+    )
+
+    // Filter products based on search query and selected category
+    val filteredProducts = products.filter { product ->
+        (selectedCategory == "All" || product.category == selectedCategory) &&
+                product.name.contains(searchQuery, ignoreCase = true)
+    }
+
+    Column(modifier = modifier.padding(8.dp)) {
+        // Search bar
+        TextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search products...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+
+        // Category dropdown
+        CategoryDropdownMenu(
+            selectedCategory = selectedCategory,
+            onCategorySelected = { selectedCategory = it },
+            categories = categories
+        )
+
+        // Product list
+        LazyColumn {
+            items(filteredProducts) { product ->
+                ProductItem(product = product, onAddToCart = onAddToCart)
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryDropdownMenu(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit,
+    categories: List<String>
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Button(onClick = { expanded = true }) {
+            Text(text = selectedCategory) // Display the currently selected category
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            categories.forEach { category ->
+                DropdownMenuItem(
+                    onClick = {
+                        onCategorySelected(category)
+                        expanded = false
+                    },
+                    text = {
+                        Text(text = category) // Correctly passing the Text composable for the 'text' parameter
+                    }
+                )
+            }
         }
     }
 }
@@ -34,7 +103,6 @@ fun ProductListScreen(products: List<Product>, modifier: Modifier = Modifier, on
 @Composable
 fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
     Column(modifier = Modifier.padding(8.dp)) {
-        // Decode base64 image and display it if available
         val bitmap = decodeBase64ToBitmap(product.imageUrl)
 
         if (bitmap != null) {
@@ -42,33 +110,28 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = product.name,
                 modifier = Modifier
-                    .size(100.dp) // Set image size
+                    .size(100.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop // Crop the image to fill the box
+                contentScale = ContentScale.Crop
             )
         } else {
-            // Fallback image or placeholder if imageUrl is null or decoding fails
             Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground), // Placeholder image
+                painter = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = "Placeholder",
                 modifier = Modifier.size(100.dp)
             )
         }
 
-        // Display product details
         Text(text = product.name, style = MaterialTheme.typography.bodyLarge)
         Text(text = product.description ?: "No description available")
         Text(text = "$${product.price}")
 
-        // Add "Add to Cart" button
         Button(
-            onClick = { onAddToCart(product) }, // Handle add to cart action
+            onClick = { onAddToCart(product) },
             modifier = Modifier.padding(top = 8.dp)
         ) {
             Text(text = "Add to Cart")
         }
     }
 }
-
-
