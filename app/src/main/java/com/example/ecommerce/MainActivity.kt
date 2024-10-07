@@ -1,6 +1,5 @@
 package com.example.ecommerce
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,47 +13,82 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce.ui.login.LoginActivity
+import com.example.ecommerce.data.model.Product
 import com.example.ecommerce.ui.theme.EcommerceTheme
+import android.util.Log
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
+import com.example.ecommerce.data.repository.ProductRepository
+import com.example.ecommerce.ui.products.ProductListScreen
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val username = intent.getStringExtra(EXTRA_USERNAME) ?: "User"
-        val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
-        val role = intent.getStringExtra(EXTRA_ROLE) ?: "No role"
+        // Get access token from shared preferences
+        val token = getAccessTokenFromSharedPreferences()
+
+        Log.d("MainActivity", "Access Token: $token")
 
         setContent {
+            var selectedItem by remember { mutableStateOf("Home") }
+            var products by remember { mutableStateOf<List<Product>>(emptyList()) }
+            var cartItems by remember { mutableStateOf<List<Product>>(emptyList()) }
+
             EcommerceTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomNavigationBar()
+                        BottomNavigationBar(selectedItem = selectedItem) { selected ->
+                            selectedItem = selected
+                        }
                     }
                 ) { innerPadding ->
-                    MainContent(
-                        username = username,
-                        email = email,
-                        role = role,
-                        modifier = Modifier.padding(innerPadding),
-                        onLogoutClick = { logout() }
-                    )
+                    when (selectedItem) {
+                        "Home" -> {
+                            // Ensure fetchProducts is only called once when Home is displayed
+                            LaunchedEffect(selectedItem) {
+                                ProductRepository(token).fetchProducts(
+                                    onSuccess = { productList ->
+                                        products = productList
+                                    },
+                                    onError = { error ->
+                                        Log.e("MainActivity", "Error fetching products: ${error.message}")
+                                    }
+                                )
+                            }
+                            // Pass the onAddToCart callback
+                            ProductListScreen(products, modifier = Modifier.padding(innerPadding)) { product ->
+                                cartItems = cartItems + product // Add product to cart
+                                Log.d("MainActivity", "Added to cart: ${product.name}")
+                            }
+                        }
+                        "Cart" -> CartScreen(cartItems, modifier = Modifier.padding(innerPadding))
+                        "Profile" -> {
+                            val username = intent.getStringExtra(EXTRA_USERNAME) ?: "User"
+                            val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
+                            val role = intent.getStringExtra(EXTRA_ROLE) ?: "No role"
+                            ProfileScreen(username, email, role, modifier = Modifier.padding(innerPadding))
+                        }
+                    }
                 }
             }
         }
     }
 
-    private fun logout() {
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
+    private fun getAccessTokenFromSharedPreferences(): String {
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        return sharedPreferences.getString("ACCESS_TOKEN", null) ?: ""
     }
 
     companion object {
@@ -65,46 +99,61 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent(username: String, email: String, role: String, modifier: Modifier = Modifier, onLogoutClick: () -> Unit) {
+fun CartScreen(cartItems: List<Product>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp)) {
-        Text(
-            text = "Hello $username!\nEmail: $email\nRole: $role",
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Button(onClick = onLogoutClick) {
+        Text("Cart Screen", style = MaterialTheme.typography.titleLarge)
+        if (cartItems.isEmpty()) {
+            Text("Your cart is empty", style = MaterialTheme.typography.bodyLarge)
+        } else {
+            LazyColumn {
+                items(cartItems) { product ->
+                    Text(text = product.name)
+                    Text(text = "$${product.price}")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileScreen(username: String, email: String, role: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        Text("Profile", style = MaterialTheme.typography.titleLarge)
+        Text("Username: $username")
+        Text("Email: $email")
+        Text("Role: $role")
+        Button(onClick = { /* Add logout functionality */ }) {
             Text("Logout")
         }
     }
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(selectedItem: String, onItemSelected: (String) -> Unit) {
     NavigationBar {
         NavigationBarItem(
-            selected = true,
-            onClick = { },
+            selected = selectedItem == "Home",
+            onClick = {
+                onItemSelected("Home")
+            },
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { },
+            selected = selectedItem == "Cart",
+            onClick = {
+                onItemSelected("Cart")
+            },
             icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Cart") },
             label = { Text("Cart") }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { },
+            selected = selectedItem == "Profile",
+            onClick = {
+                onItemSelected("Profile")
+            },
             icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
             label = { Text("Profile") }
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainContentPreview() {
-    EcommerceTheme {
-        MainContent("Android", "android@example.com", "User", onLogoutClick = {})
     }
 }

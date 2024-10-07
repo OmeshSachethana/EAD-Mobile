@@ -1,4 +1,4 @@
-package com.example.ecommerce.ui.registration
+package com.example.ecommerce.ui.register
 
 import android.content.Intent
 import android.os.Bundle
@@ -44,7 +44,8 @@ class RegistrationActivity : AppCompatActivity() {
 
             val registrationRequest = UserRegistrationRequest(username, email, password)
 
-            RetrofitClient.instance.register(registrationRequest).enqueue(object : Callback<User> {
+            // Use RetrofitClient to perform the registration request
+            RetrofitClient.getInstance().register(registrationRequest).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful && response.body() != null) {
                         Toast.makeText(this@RegistrationActivity, "Registration Successful. Please log in.", Toast.LENGTH_LONG).show()
@@ -75,3 +76,4 @@ class RegistrationActivity : AppCompatActivity() {
         finish()  // Close RegistrationActivity
     }
 }
+
