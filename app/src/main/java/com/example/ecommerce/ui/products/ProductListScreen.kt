@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce.R
 import com.example.ecommerce.data.model.Product
@@ -49,6 +50,14 @@ fun ProductListScreen(
 
     Column(modifier = modifier.padding(8.dp)) {
         // Search bar
+        Text(
+            text = "Ecommerce",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            textAlign = TextAlign.Center // Center align the text
+        )
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
