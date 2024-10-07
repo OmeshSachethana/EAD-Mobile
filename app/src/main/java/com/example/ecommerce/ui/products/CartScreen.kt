@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.sp
 import com.example.ecommerce.data.model.Product
 
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -30,42 +34,60 @@ import com.example.ecommerce.R
 fun CartScreen(
     email: String,
     context: Context,
+    cartItems: List<Product>,
+    onCartItemsChanged: (List<Product>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Load cart items using the email
-    var cartItems by remember { mutableStateOf(loadCartItems(context, email)) }
-
-    // Save cart items whenever they change
-    LaunchedEffect(cartItems) {
-        saveCartItems(context, email, cartItems)  // Use email for saving
-    }
-
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize() // Ensure Column takes up all available space
+    ) {
         Text("Your Shopping Cart", style = MaterialTheme.typography.titleLarge)
 
         if (cartItems.isEmpty()) {
-            Text(
-                text = "Your cart is empty",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 20.dp)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.noun_empty_cart_3592882),
+                    contentDescription = "Empty Cart",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(0.5f)
+                )
+                Text(
+                    text = "Your cart is empty",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.fillMaxWidth()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f) // LazyColumn takes up the available space but not more
+                    .fillMaxWidth()
+            ) {
                 items(cartItems) { product ->
                     CartItem(
                         product = product,
                         onRemoveFromCart = {
-                            cartItems = cartItems.filter { it.id != product.id }
+                            onCartItemsChanged(cartItems.filter { it.id != product.id })
                         },
                         onIncreaseQuantity = {
-                            cartItems = cartItems.map {
+                            onCartItemsChanged(cartItems.map {
                                 if (it.id == product.id) it.copy(quantity = it.quantity + 1) else it
-                            }
+                            })
                         },
                         onDecreaseQuantity = {
-                            cartItems = cartItems.map {
+                            onCartItemsChanged(cartItems.map {
                                 if (it.id == product.id && it.quantity > 1) it.copy(quantity = it.quantity - 1) else it
-                            }.filter { it.quantity > 0 }
+                            }.filter { it.quantity > 0 })
                         }
                     )
                     HorizontalDivider(
@@ -75,8 +97,23 @@ fun CartScreen(
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { /* Proceed to checkout */ }, modifier = Modifier.align(Alignment.End)) {
+
+            // Align the button at the bottom, outside the scrollable area
+            Button(
+                onClick = {
+                    // Checkout process
+                    performCheckout(context) {
+                        // Clear cart items after checkout
+                        onCartItemsChanged(emptyList())
+                    }
+                },
+                enabled = cartItems.isNotEmpty(), // Disable button if cart is empty
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(bottom = 16.dp) // Optional: Padding at the bottom for better spacing
+            ) {
                 Text("Proceed to Checkout")
             }
         }
@@ -149,3 +186,10 @@ fun CartItem(
     }
 }
 
+private fun performCheckout(context: Context, onSuccess: () -> Unit) {
+    // Simulate a purchase operation (you can replace this with actual purchase logic)
+    Toast.makeText(context, "Purchase successful!", Toast.LENGTH_SHORT).show()
+
+    // Call onSuccess to clear the cart
+    onSuccess()
+}

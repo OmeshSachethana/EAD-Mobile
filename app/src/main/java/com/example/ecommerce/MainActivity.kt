@@ -88,6 +88,8 @@ class MainActivity : ComponentActivity() {
                         "Cart" -> CartScreen(
                             email = email,
                             context = this, // Pass the context to CartScreen
+                            cartItems = cartItems, // Pass cartItems state
+                            onCartItemsChanged = { updatedCartItems -> cartItems = updatedCartItems }, // Allow CartScreen to update cartItems
                             modifier = Modifier.padding(innerPadding)
                         )
                         "Profile" -> {
