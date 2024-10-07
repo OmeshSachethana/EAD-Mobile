@@ -27,16 +27,18 @@
             </intent-filter>
         </activity>
 
-        <!-- Add RegistrationActivity here -->
         <activity
-            android:name=".ui.registration.RegistrationActivity"
+            android:name=".ui.register.RegistrationActivity"
             android:exported="true"
             android:label="Register"
             android:theme="@style/RegisterTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.products.ProductsActivity"
+            android:exported="true"
+            android:label="Products"
+            android:theme="@style/ProductsTheme">
         </activity>
 
         <activity

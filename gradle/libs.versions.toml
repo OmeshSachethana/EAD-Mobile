@@ -18,6 +18,7 @@ retrofit = "2.9.0"
 gson = "2.9.0"
 okhttp_logging_interceptor = "4.9.0"
 jwt = "2.0.0"
+glide = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,8 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 retrofitGsonConverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gson" }
 okhttpLoggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp_logging_interceptor" }
 jwtDecode = { module = "com.auth0.android:jwtdecode", version.ref = "jwt" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
