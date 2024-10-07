@@ -25,12 +25,18 @@ data class OrderProduct(
     val status: ProductStatus  // Status of the product (Pending, Delivered, etc.)
 )
 
-enum class OrderStatus {
-    Processing,
-    Shipped,
-    PartiallyDelivered,
-    Delivered,
-    Cancelled
+enum class OrderStatus(val value: Int) {
+    Processing(0),
+    Shipped(1),
+    PartiallyDelivered(2),
+    Delivered(3),
+    Cancelled(4);
+
+    companion object {
+        fun fromInt(value: Int): OrderStatus {
+            return entries.find { it.value == value } ?: Processing
+        }
+    }
 }
 
 enum class ProductStatus {
