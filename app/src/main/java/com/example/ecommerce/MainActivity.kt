@@ -19,17 +19,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce.data.model.Product
 import com.example.ecommerce.ui.theme.EcommerceTheme
 import android.util.Log
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import com.example.ecommerce.data.repository.ProductRepository
 import com.example.ecommerce.ui.login.LoginActivity
+import com.example.ecommerce.ui.products.CartScreen
 import com.example.ecommerce.ui.products.ProductListScreen
+import com.example.ecommerce.ui.products.loadCartItems
+import com.example.ecommerce.ui.products.saveCartItems
 import com.example.ecommerce.ui.profile.ProfileScreen
 
 class MainActivity : ComponentActivity() {
@@ -40,20 +40,23 @@ class MainActivity : ComponentActivity() {
 
         // Get access token from shared preferences
         val token = getAccessTokenFromSharedPreferences()
-        Log.d("MainActivity", "Access Token: $token")
+        val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
 
         setContent {
             var selectedItem by remember { mutableStateOf("Home") }
             var products by remember { mutableStateOf<List<Product>>(emptyList()) }
-            var cartItems by remember { mutableStateOf<List<Product>>(emptyList()) }
+            var cartItems by remember { mutableStateOf(loadCartItems(this, email)) }
+
+            // Save cart items whenever they change
+            LaunchedEffect(cartItems) {
+                saveCartItems(this@MainActivity, email, cartItems) // Save using email
+            }
 
             EcommerceTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomNavigationBar(selectedItem = selectedItem) { selected ->
-                            selectedItem = selected
-                        }
+                        BottomNavigationBar(selectedItem = selectedItem) { selected -> selectedItem = selected }
                     }
                 ) { innerPadding ->
                     when (selectedItem) {
@@ -61,27 +64,38 @@ class MainActivity : ComponentActivity() {
                             // Ensure fetchProducts is only called once when Home is displayed
                             LaunchedEffect(selectedItem) {
                                 ProductRepository(token).fetchProducts(
-                                    onSuccess = { productList ->
-                                        products = productList
-                                    },
-                                    onError = { error ->
-                                        Log.e("MainActivity", "Error fetching products: ${error.message}")
-                                    }
+                                    onSuccess = { productList -> products = productList },
+                                    onError = { error -> Log.e("MainActivity", "Error fetching products: ${error.message}") }
                                 )
                             }
-                            // Pass the onAddToCart callback
-                            ProductListScreen(products, modifier = Modifier.padding(innerPadding)) { product ->
-                                cartItems = cartItems + product // Add product to cart
-                                Log.d("MainActivity", "Added to cart: ${product.name}")
+                            ProductListScreen(
+                                products = products,
+                                modifier = Modifier.padding(innerPadding)
+                            ) { product ->
+                                val existingProduct = cartItems.find { it.id == product.id }
+
+                                if (existingProduct != null) {
+                                    // If the product is already in the cart, increase the quantity
+                                    cartItems = cartItems.map {
+                                        if (it.id == product.id) it.copy(quantity = it.quantity + 1) else it
+                                    }
+                                } else {
+                                    // If the product is new to the cart, add it with its current quantity from the DB
+                                    cartItems = cartItems + product // Keep the product's existing quantity from DB
+                                }
                             }
                         }
-                        "Cart" -> CartScreen(cartItems, modifier = Modifier.padding(innerPadding))
+                        "Cart" -> CartScreen(
+                            email = email,
+                            context = this, // Pass the context to CartScreen
+                            modifier = Modifier.padding(innerPadding)
+                        )
                         "Profile" -> {
                             val username = intent.getStringExtra(EXTRA_USERNAME) ?: "User"
                             val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
                             val role = intent.getStringExtra(EXTRA_ROLE) ?: "No role"
                             ProfileScreen(username, email, role, modifier = Modifier.padding(innerPadding)) {
-                                onLogout() // Handle logout here
+                                onLogout()
                             }
                         }
                     }
@@ -113,23 +127,6 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_USERNAME = "EXTRA_USERNAME"
         const val EXTRA_EMAIL = "EXTRA_EMAIL"
         const val EXTRA_ROLE = "EXTRA_ROLE"
-    }
-}
-
-@Composable
-fun CartScreen(cartItems: List<Product>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(16.dp)) {
-        Text("Cart Screen", style = MaterialTheme.typography.titleLarge)
-        if (cartItems.isEmpty()) {
-            Text("Your cart is empty", style = MaterialTheme.typography.bodyLarge)
-        } else {
-            LazyColumn {
-                items(cartItems) { product ->
-                    Text(text = product.name)
-                    Text(text = "$${product.price}")
-                }
-            }
-        }
     }
 }
 
