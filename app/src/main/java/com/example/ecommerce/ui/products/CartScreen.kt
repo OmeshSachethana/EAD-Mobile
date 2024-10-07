@@ -29,6 +29,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.ecommerce.R
+import com.example.ecommerce.data.model.Order
+import com.example.ecommerce.data.model.OrderProductRequest
+import com.example.ecommerce.data.model.OrderRequest
+import com.example.ecommerce.data.network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun CartScreen(
@@ -103,8 +110,8 @@ fun CartScreen(
             // Align the button at the bottom, outside the scrollable area
             Button(
                 onClick = {
-                    // Checkout process
-                    performCheckout(context) {
+                    // Trigger checkout
+                    performCheckout(context, email, cartItems) {
                         // Clear cart items after checkout
                         onCartItemsChanged(emptyList())
                     }
@@ -186,10 +193,56 @@ fun CartItem(
     }
 }
 
-private fun performCheckout(context: Context, onSuccess: () -> Unit) {
-    // Simulate a purchase operation (you can replace this with actual purchase logic)
-    Toast.makeText(context, "Purchase successful!", Toast.LENGTH_SHORT).show()
+private fun performCheckout(
+    context: Context,
+    email: String,
+    cartItems: List<Product>,
+    onSuccess: () -> Unit
+) {
+    // Retrieve the token from SharedPreferences
+    val sharedPreferences = context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE)
+    val token = sharedPreferences.getString("ACCESS_TOKEN", null)
 
-    // Call onSuccess to clear the cart
-    onSuccess()
+    // Check if token is not null
+    if (token.isNullOrEmpty()) {
+        Toast.makeText(context, "Error: No token found. Please login again.", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    // Construct the OrderRequest object
+    val products = cartItems.map { product ->
+        OrderProductRequest(
+            productId = product.id,
+            vendorId = product.vendorId,  // Assuming vendorId is present in the Product model
+            quantity = product.quantity
+        )
+    }
+
+    val orderRequest = OrderRequest(
+        customerId = email,  // Assuming email is the customerId
+        products = products,
+        notes = "Please handle with care" // Add any additional notes as necessary
+    )
+
+    // Get the ApiService instance using the retrieved token
+    val apiService = RetrofitClient.getInstance(token)
+
+    // Call the ApiService to create the order
+    apiService.createOrder(orderRequest).enqueue(object : Callback<Order> {
+        override fun onResponse(call: Call<Order>, response: Response<Order>) {
+            if (response.isSuccessful) {
+                // Order placed successfully, show a success message
+                Toast.makeText(context, "Order placed successfully!", Toast.LENGTH_SHORT).show()
+                onSuccess()  // Clear the cart
+            } else {
+                // Handle error response from the server
+                Toast.makeText(context, "Failed to place order: ${response.message()}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onFailure(call: Call<Order>, t: Throwable) {
+            // Handle network error or failure
+            Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+        }
+    })
 }
