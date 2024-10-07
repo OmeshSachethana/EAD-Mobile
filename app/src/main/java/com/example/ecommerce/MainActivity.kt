@@ -1,5 +1,6 @@
 package com.example.ecommerce
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,7 +28,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import com.example.ecommerce.data.repository.ProductRepository
+import com.example.ecommerce.ui.login.LoginActivity
 import com.example.ecommerce.ui.products.ProductListScreen
+import com.example.ecommerce.ui.profile.ProfileScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -37,7 +40,6 @@ class MainActivity : ComponentActivity() {
 
         // Get access token from shared preferences
         val token = getAccessTokenFromSharedPreferences()
-
         Log.d("MainActivity", "Access Token: $token")
 
         setContent {
@@ -78,12 +80,28 @@ class MainActivity : ComponentActivity() {
                             val username = intent.getStringExtra(EXTRA_USERNAME) ?: "User"
                             val email = intent.getStringExtra(EXTRA_EMAIL) ?: "No email"
                             val role = intent.getStringExtra(EXTRA_ROLE) ?: "No role"
-                            ProfileScreen(username, email, role, modifier = Modifier.padding(innerPadding))
+                            ProfileScreen(username, email, role, modifier = Modifier.padding(innerPadding)) {
+                                onLogout() // Handle logout here
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun onLogout() {
+        // Clear access token from shared preferences
+        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            remove("ACCESS_TOKEN")
+            apply()
+        }
+
+        // Navigate to login screen
+        val intent = Intent(this, LoginActivity::class.java) // Replace with your actual login activity
+        startActivity(intent)
+        finish() // Optional: finish the current activity
     }
 
     private fun getAccessTokenFromSharedPreferences(): String {
@@ -111,19 +129,6 @@ fun CartScreen(cartItems: List<Product>, modifier: Modifier = Modifier) {
                     Text(text = "$${product.price}")
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ProfileScreen(username: String, email: String, role: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(16.dp)) {
-        Text("Profile", style = MaterialTheme.typography.titleLarge)
-        Text("Username: $username")
-        Text("Email: $email")
-        Text("Role: $role")
-        Button(onClick = { /* Add logout functionality */ }) {
-            Text("Logout")
         }
     }
 }
