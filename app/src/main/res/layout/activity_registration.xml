@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    tools:context=".ui.registration.RegistrationActivity">
+    tools:context=".ui.register.RegistrationActivity">
 
     <!-- Logo at the top -->
     <ImageView
         android:id="@+id/logo"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@android:drawable/ic_menu_info_details"
+        android:src="@drawable/logo"
     android:layout_marginTop="64dp"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
