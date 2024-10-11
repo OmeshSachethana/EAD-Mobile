@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#000000"
+        android:pathData="M2,2L22,2L22,22L2,22L2,2Z"
+        android:fillAlpha="0" />
+
+    <!-- Chat Bubble -->
+    <path
+        android:fillColor="#FF9800"
+        android:pathData="M2,21L4,18H20A1,1 0,0 0,21,17V3A1,1 0,0 0,20,2H4A1,1 0,0 0,3,3V17A1,1 0,0 0,4,18H5L2,21Z"/>
+
+    <!-- Pen Icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14.69,7.39L16.61,9.31L10.74,15.18L8.82,13.26L14.69,7.39M13.85,6.54L8,12.39L6.83,15.59L10.03,14.43L15.88,8.58L13.85,6.54Z"/>
+</vector>

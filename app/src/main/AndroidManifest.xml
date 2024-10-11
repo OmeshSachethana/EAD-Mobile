@@ -41,6 +41,9 @@
             android:theme="@style/ProductsTheme">
         </activity>
 
+        <activity android:name=".ui.vendor.VendorFeedbackActivity" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

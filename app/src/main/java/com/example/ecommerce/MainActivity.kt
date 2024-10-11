@@ -148,6 +148,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    }
+
 
     private fun onLogout() {
         // Clear access token from shared preferences

@@ -10,6 +10,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 import com.example.ecommerce.data.model.UserRegistrationRequest
+import com.example.ecommerce.data.model.VendorFeedbackRequest
 import com.example.ecommerce.data.model.Product
 import retrofit2.http.GET
 import retrofit2.http.PUT
@@ -37,5 +38,13 @@ interface ApiService {
 
     @PUT("api/orders/{orderId}/payment")
     fun completePayment(@Path("orderId") orderId: String): Call<Void>
+
+    @POST("vendor/add-feedback/{vendorId}")
+    fun submitFeedback(
+        @Path("vendorId") vendorId: String,
+        @Body feedback: VendorFeedbackRequest
+    ): Call<Void>
+
+
 
 }

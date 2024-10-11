@@ -30,7 +30,8 @@ import kotlinx.coroutines.delay
 fun ProductListScreen(
     products: List<Product>,
     modifier: Modifier = Modifier,
-    onAddToCart: (Product) -> Unit
+    onAddToCart: (Product) -> Unit,
+    navigateToReview: (String) -> Unit // Adjust to pass VendorId to feedback screen
 ) {
     // State variables for search and category filter
     var searchQuery by remember { mutableStateOf("") }
@@ -57,7 +58,7 @@ fun ProductListScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
-            textAlign = TextAlign.Center // Center align the text
+            textAlign = TextAlign.Center
         )
         TextField(
             value = searchQuery,
@@ -77,18 +78,23 @@ fun ProductListScreen(
 
         // Product grid with two columns
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2), // Define 2 columns
+            columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(filteredProducts) { product ->
-                ProductItem(product = product, onAddToCart = onAddToCart)
+                ProductItem(
+                    product = product,
+                    onAddToCart = onAddToCart,
+                    navigateToReview = navigateToReview // Pass the navigateToReview function
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun CategoryButtons(
@@ -119,7 +125,11 @@ fun CategoryButtons(
 }
 
 @Composable
-fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
+fun ProductItem(
+    product: Product,
+    onAddToCart: (Product) -> Unit,
+    navigateToReview: (String) -> Unit // Change to pass the VendorId
+) {
     var isAddingToCart by remember { mutableStateOf(false) }
 
     Column(
@@ -162,6 +172,7 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
         )
         Text(text = "$${product.price}")
 
+        // Add to Cart button
         Button(
             onClick = {
                 isAddingToCart = true
@@ -171,10 +182,10 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
                 .padding(top = 8.dp)
                 .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary, // Updated parameter name
-                contentColor = Color.White // This remains unchanged for text color
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
             ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp) // Updated to buttonElevation
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
         ) {
             if (isAddingToCart) {
                 CircularProgressIndicator(
@@ -183,7 +194,7 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
                 )
             } else {
                 Icon(
-                    painter = painterResource(R.drawable.ic_cart_foreground), // Replace with actual cart icon resource
+                    painter = painterResource(R.drawable.ic_cart_foreground),
                     contentDescription = "Add to Cart",
                     modifier = Modifier.size(22.dp)
                 )
@@ -196,8 +207,28 @@ fun ProductItem(product: Product, onAddToCart: (Product) -> Unit) {
             LaunchedEffect(Unit) {
                 delay(2000) // Simulate a delay for adding to cart
                 isAddingToCart = false
-                // Optionally show a Snackbar here to confirm the addition to the cart
             }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Add Review button
+        Button(
+            onClick = { navigateToReview(product.vendorId) }, // Pass VendorId when clicked
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = Color.White
+            )
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_review_foreground), // Replace with actual review icon resource
+                contentDescription = "Add Review",
+                modifier = Modifier.size(22.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = "Add Review")
         }
     }
 }
